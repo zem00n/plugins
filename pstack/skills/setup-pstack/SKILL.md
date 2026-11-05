@@ -1,6 +1,6 @@
 ---
 name: setup-pstack
-description: Verify the pstack installation on pi: check the install directory contains the skill dirs and SUBAGENT-ADAPTER.md, and report the installed skills. Use for /setup-pstack or checking your pstack install.
+description: "verify the pstack installation on pi: check the install directory contains the skill dirs and SUBAGENT-ADAPTER.md, and report the installed skills. Use for /setup-pstack or checking your pstack install."
 ---
 
 # Setup pstack (pi)
