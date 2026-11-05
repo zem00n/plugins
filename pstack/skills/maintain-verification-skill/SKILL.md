@@ -4,7 +4,7 @@ description: "Periodic pass that keeps a project's verification skill and featur
 disable-model-invocation: true
 ---
 
-> **Pi env:** no Task tool/subagents — read [SUBAGENT-ADAPTER.md](../SUBAGENT-ADAPTER.md) and apply substitutions wherever this file says to spawn a subagent.
+> **Pi env:** read [SUBAGENT-ADAPTER.md](../SUBAGENT-ADAPTER.md) before following delegation instructions in this file.
 
 # Maintain a verification skill
 
@@ -24,7 +24,7 @@ Only edit the verification skill's own directory (its SKILL.md, features/, and a
 
 ## Pass
 
-0. **Locate the target.** Find the verification skill to maintain: the project-local skill whose body has launch/drive sections and a feature map (usually `.cursor/skills/verify-*/`). Several candidates → ask which one; none → stop and point at `/create-verification-skill` instead of inventing a target.
+0. **Locate the target.** Find the verification skill to maintain: the project-local skill whose body has launch/drive sections and a feature map (usually in the project-local Pi skill directory/verify-*/). Several candidates → ask which one; none → stop and point at `/create-verification-skill` instead of inventing a target.
 
 1. **Index hygiene.** Read the feature map README and glob its sibling files. Fix missing, extra, duplicate, or dead entries. Lightweight; no generated inventory.
 

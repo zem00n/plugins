@@ -1,12 +1,12 @@
 ---
 name: setup-pstack
-description: Verify the pstack installation on pi: check the install directory contains the skill dirs and SUBAGENT-ADAPTER.md, and report the installed skills. Use for /setup-pstack or checking your pstack install.
+description: "verify the pstack installation on pi: check the install directory contains the skill dirs and SUBAGENT-ADAPTER.md, and report the installed skills. Use for /setup-pstack or checking your pstack install."
 ---
 
 # Setup pstack (pi)
 
 **Pi environment:** there is no Task tool, no per-role subagent models, and
-no `~/.cursor/rules/pstack-models.mdc`. All model-slug configuration in
+no `Pi provider/model configuration`. All model-slug configuration in
 pstack skills is inert here — every skill runs on the parent session model.
 
 Nothing to configure. This skill only verifies the installation:

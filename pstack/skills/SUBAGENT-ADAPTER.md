@@ -1,30 +1,25 @@
 ---
 name: subagent-adapter
-description: 'Read this when any pstack skill says to spawn a subagent or use the Task tool. Environment adaptation for pi: there is no Task tool and no subagent infra.'
+description: 'Translate Cursor-oriented pstack delegation instructions to the Pi coding agent.'
 ---
 
 # Pi adaptation for pstack
 
-This install runs on the pi coding agent, which has no Task tool and no
-subagent infrastructure. Apply these substitutions whenever a skill or
-playbook says to spawn a subagent / Task / `subagent_type` / cloud agent:
+This install runs inside the Pi coding agent. Cursor's `Task`, `AskQuestion`, cloud-agent environments, Cursor model files, and Cursor transcript paths are not available here.
 
-- **Subagent as delegate (do work):** Do the work yourself in this session,
-  following poteto-mode principles. You own the diff and the review.
-- **Subagent for context isolation (parse big artifacts, mine transcripts):**
-  Write intermediate findings to a file (or use grep/session_search), keep
-  only the summary in the main thread. Never inline raw payloads.
-- **Parallel fan-out (arena, swarm, interrogate, reflect, recall):** Run the
-  slices/candidates/reviewers sequentially, one pass each. If real
-  parallelism matters, spawn background `pi -p "<task>" > /tmp/out-<name>.md &`
-  processes (tmux) and read each output file.
-- **Fresh-eyes reviewers (interrogate, show-me-your-work, no-comments
-  Comment Sicko):** Do the review as a separate dedicated pass with the
-  reviewer's own rubric and adversarial posture. State findings as if
-  authored by an independent reviewer; do not soften them.
-- **Models config:** `~/.cursor/rules/pstack-models.mdc` does not exist and
-  no per-role model selection is available. Ignore all model-slug
-  instructions and use the parent session model everywhere.
-- **Cursor built-ins:** `/loop`, cursor-team-kit, cloud agents
-  (`environment: "cloud"`) are unavailable. Fall back to the plain
-  sequential behavior described above.
+Apply these substitutions whenever a skill or playbook asks for a subagent, `Task`, `subagent_type`, a cloud worker, or a Cursor built-in:
+
+- **Delegate investigative or reasoning work:** use `bg_delegate` when the work is read-only and benefits from a separate context. Give it a bounded question and retrieve the result with `bg_result` after completion.
+- **Delegate a shell command, test, build, or watcher:** use `bg_run`. Set `isAgent: false` for ordinary commands and `isAgent: true` only when launching another Pi agent.
+- **Produce an attested child-agent report:** use `bg_run_pi_attested` only when the user explicitly asks for attested Pi evidence.
+- **No delegation needed:** do the work in the current session. The parent owns the final diff, review, and summary.
+- **Context isolation:** for large artifacts, use bounded reads, `readSeek_digest`, `readSeek_grep`, or `session_search`; keep summaries in the main context rather than copying raw payloads.
+- **Parallel fan-out:** use `multi_tool_use.parallel` for independent repository reads or ordinary commands. For model-based fan-out, launch separate background tasks with isolated output paths. Never have workers write the same file.
+- **Fresh-eyes review:** perform a separate review pass with an explicit rubric, or use a read-only `bg_delegate`. Do not claim independent review from the same reasoning pass.
+- **Models:** do not read `~/.cursor/rules/pstack-models.mdc` and do not use Cursor model slugs. Use the current Pi route unless a Pi tool explicitly accepts a provider/model supplied by the user.
+- **Interactive questions:** do not name `AskQuestion`. Ask in the normal chat only when the issue is genuinely ambiguous or irreversible. For goal/list workflows, use the goal tools supplied by Pi.
+- **Cursor built-ins:** replace Cursor-only skills such as `create-skill`, `deslop`, babysit, `control-ui`, and `control-cli` with the closest local skill, an explicit checklist, or the repository's own commands. Do not invent a command that is not installed.
+- **Transcript/session history:** use Pi session tools (`session_search`, `session_list`, `session_read`) or the active conversation. Never assume `~/.cursor/projects/.../agent-transcripts/...` exists.
+- **Project-local skills:** use the project's established Pi skill directory. In this pstack repository, keep bundled skills in their current directories; do not generate `.cursor/skills/...` paths.
+
+When a source skill still contains Cursor terminology, follow the Pi substitution above rather than treating the old syntax as executable instructions.

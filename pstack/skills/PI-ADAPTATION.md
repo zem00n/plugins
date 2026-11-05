@@ -1,12 +1,10 @@
-# pi adaptation of pstack
+# Pi adaptation of pstack
 
-Adapted for the [pi coding agent](https://pi.dev), which has no Task tool and
-no subagent infrastructure. Start with [SUBAGENT-ADAPTER.md](./SUBAGENT-ADAPTER.md)
-— it defines the substitutions applied wherever a skill says to spawn a
-subagent (delegate → inline, parallel fan-out → sequential, model config →
-parent session model).
+This checkout adapts pstack skills for the Pi coding agent. Cursor-specific
+delegation, transcript paths, model files, and built-ins are replaced by the
+Pi adapter in [SUBAGENT-ADAPTER.md](./SUBAGENT-ADAPTER.md).
 
-Skills touched: arena, automate-me, how, interrogate,
-maintain-verification-skill, no-comments, poteto-mode (SKILL.md + all
-playbooks), principle-build-the-lever, principle-guard-the-context-window,
-recall, reflect, setup-pstack (rewritten), show-me-your-work, swarm, why.
+Use Pi session tools for history, `bg_delegate` for bounded read-only work,
+`bg_run` for commands and background processes, and the current Pi route for
+model selection. Skills that need multiple perspectives run delegated passes
+with isolated output rather than assuming Cursor cloud workers.

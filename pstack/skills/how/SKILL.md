@@ -1,43 +1,39 @@
 ---
 name: how
-description: "Use for \"how does X work\", code walkthroughs before changing something, and placement / ownership / layering questions (\"where should this live\", \"which package owns this\", \"is this the right layer\"). Explains subsystem architecture, runtime flow, onboarding mental models. Can critique architecture. Use why for motivation."
+description: "Use for \"how does X work\", code walkthroughs before changing something, and placement / ownership / layering questions (\"where should this live\", \"which package owns this\", \"is this the right layer\"). Explains subsystem architecture, runtime flow, onboarding mental models. Use why for motivation."
 disable-model-invocation: true
 ---
 
-> **Pi env:** no Task tool/subagents — read [SUBAGENT-ADAPTER.md](../SUBAGENT-ADAPTER.md) and apply substitutions wherever this file says to spawn a subagent.
+> **Pi env:** read [SUBAGENT-ADAPTER.md](../SUBAGENT-ADAPTER.md) before following delegation instructions in this file.
 
 # How
 
-Explore the codebase to answer "how does X work?" questions. Produce clear architectural explanations at the level of a senior engineer onboarding onto a subsystem. Enough to build a working mental model, not annotated source code.
+Explore the codebase to answer "how does X work?" questions. Produce architectural explanations at the level of a senior engineer onboarding onto a subsystem, enough to build a working mental model, not so much that it reads like annotated source code.
 
-Two modes:
+Every spawn is a Task subagent with `subagent_type: generalPurpose` and `readonly: true`. Explorers use the `how explorer` line in the `pstack-models.mdc` rule (default `grok-4.7-xhigh-fast`), and every explainer uses the `how explainer` line (default `claude-opus-5-5-xhigh`). Set `model` to that line's value, or to the default if the rule or the line is missing. Leave `model` unset when the value is `auto` or `inherit-parent`. If the Task tool rejects a slug, use the default and say so. If it rejects the default, use the closest valid slug of the same family from its error message. Pick each subagent's reasoning level and fast or standard speed for the job, per the Subagents section of the **poteto-mode** skill.
 
-1. **Explain** (default). Explore the codebase and produce a clear explanation
-2. **Critique.** Explain first, then spawn multiple models to independently identify architectural issues
+## 1. Assess complexity
 
-## Explain Mode
+If the scope is ambiguous, state your interpretation and explore. The user can redirect.
 
-### Step 1. Understand the Question and Assess Complexity
+- **Simple** (a single module, a small utility, a narrow question such as "how does function X work"): no explorers. Spawn one explainer that explores and explains in one pass, built from `references/explainer-prompt.md` without the explorer-findings section. Go to step 4.
+- **Complex** (a subsystem spanning multiple files or services, a cross-cutting feature, a full architectural overview): go to step 2.
 
-Parse what the user is asking about:
+When in doubt, take the simple path.
 
-- "How does the rate limiter work?", a subsystem
-- "How do we handle billing for on-demand usage?", a feature flow
-- "How is the auth service structured?", an architectural overview
-- "Walk me through what happens when a user submits a form", a runtime trace
+## 2. Explore (complex only)
 
-Identify the scope. If ambiguous, state your best-guess interpretation before exploring. Don't ask. Let the user redirect if you're off.
+Decompose the question into 2 to 4 angles, each a distinct slice of the subsystem. Spawn all explorers in a single message, each with `references/explorer-prompt.md` and its angle filled in.
 
-**Assess complexity to decide the approach:**
+## 3. Synthesize (complex only)
 
-- **Simple** (a single module, a small utility, a narrow question like "how does function X work"): skip explorer agents; the explainer explores and explains in a single pass. Go to Step 2b.
-- **Complex** (a subsystem spanning multiple files/services, a cross-cutting feature, a full architectural overview): spawn parallel explorer agents first, then hand off to the explainer. Go to Step 2a.
+Once all explorers have returned, spawn one explainer with `references/explainer-prompt.md` and every explorer's findings filled in.
 
-When in doubt, lean simple. You can always spawn explorers if the explainer hits a wall.
+## 4. Present
 
-### Step 2a. Explore (complex questions only)
+Present the explainer's output. Light edits for clarity or context from the conversation are fine. Do not substantially rewrite it.
 
-Decompose the question into 2-4 parallel exploration angles, each a distinct slice of the subsystem so explorers don't duplicate work. Example split for "how does the rate limiter work?":
+## Output format
 
 - Explorer 1: data model and state management
 - Explorer 2: request path and enforcement
@@ -47,7 +43,7 @@ The right decomposition depends on the question. Use your judgment. Narrow quest
 
 Spawn all explorers in a single message:
 
-- `subagent_type`: `generalPurpose`
+- Use a delegated Pi pass with the adapter rules.
 - `model`: your configured how-explorer model (default `grok-4.6-fast-xhigh`)
 - `readonly`: `true`
 
@@ -64,9 +60,9 @@ Then proceed to Step 3.
 
 ### Step 2b. Direct Explain (simple questions)
 
-Spawn a single Task subagent that explores and explains in one pass:
+Run a single delegated Pi pass that explores and explains in one pass:
 
-- `subagent_type`: `generalPurpose`
+- Use a delegated Pi pass with the adapter rules.
 - `model`: your configured how-explainer model (default `claude-fable-5-1-thinking-max`)
 - `readonly`: `true`
 
@@ -76,9 +72,9 @@ Proceed to Step 4.
 
 ### Step 3. Synthesize (complex questions only)
 
-Once all explorers return, spawn a single Task subagent to synthesize their findings into one coherent explanation:
+Once all explorers return, run a single delegated Pi pass to synthesize their findings into one coherent explanation:
 
-- `subagent_type`: `generalPurpose`
+- Use a delegated Pi pass with the adapter rules.
 - `model`: your configured how-explainer model (default `claude-fable-5-1-thinking-max`)
 - `readonly`: `true`
 
@@ -115,7 +111,7 @@ Run the full explain flow above (Steps 1-4). You must understand the architectur
 After the explanation is complete, spawn one architectural critic per model in your configured how-critics list (defaults `claude-fable-5-1-thinking-max`, `gpt-5.6-sol-max`, `grok-4.6-fast-xhigh`, `claude-opus-5-thinking-xhigh`), all in a single message.
 
 For each critic:
-- `subagent_type`: `generalPurpose`
+- Use a delegated Pi pass with the adapter rules.
 - `model`: one model from the configured how-critics list. These are minimum reasoning levels. The lead should escalate any model when the architecture warrants deeper analysis.
 - `readonly`: `true`
 
